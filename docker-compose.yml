@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16
+    container_name: pulsewatch_db
+    environment:
+      POSTGRES_DB: pulsewatch
+      POSTGRES_USER: pulsewatch_user
+      POSTGRES_PASSWORD: securepassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - pulsewatch_pgdata:/var/lib/postgresql/data
+
+volumes:
+  pulsewatch_pgdata:
