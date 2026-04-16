@@ -1,101 +1,107 @@
 # PulseWatch
 
-PulseWatch is a FastAPI backend for tracking monitored endpoints and storing uptime-style metrics and alerts in PostgreSQL.
+PulseWatch is a cloud-ready API monitoring platform inspired by Datadog and New Relic. It tracks uptime, latency, status codes, and alert lifecycles for external services through a FastAPI backend, background workers, and a React dashboard.
 
-## Stack
+## Features
 
-- FastAPI
-- SQLAlchemy
-- PostgreSQL
-- Docker Compose
+- Endpoint registration, update, enable/disable, and pagination
+- Background health checks with retry support
+- Metric collection for latency, HTTP status, success rate, and failures
+- Threshold-based alert evaluation with trigger and resolve lifecycle
+- Notifications through email, Slack, or structured logs
+- JWT authentication for protected APIs
+- Dashboard summary API and CSV exports
+- Structured logging, rate limiting, and request middleware
+- React + Vite frontend for dashboard, endpoints, alerts, and settings
+- Docker, AWS scaffolding, Alembic migration files, and CI workflow
 
-## Project Structure
+## Project Layout
 
 ```text
-.
-|-- backend/
-|   |-- database.py
-|   |-- main.py
-|   |-- models.py
-|   `-- .env.example
-|-- docker-compose.yml
-`-- README.md
+app/
+  api/            FastAPI routers, schemas, dependencies, middleware
+  core/           config, database, security, logging, exceptions
+  models/         SQLAlchemy models
+  services/       business logic and data access
+  worker/         scheduler, health checker, alerts, notifications, exports
+frontend/         React + Vite dashboard
+infra/            Docker and AWS deployment scaffolding
+migrations/       Alembic configuration and initial migration
+scripts/          utility scripts for worker startup, seeding, and superuser creation
+tests/            unit and integration tests
 ```
 
-## Requirements
+## Local Setup
 
-- Python 3.11+
-- Docker Desktop
-
-## Environment Setup
-
-Create an environment file from the example:
+1. Copy the environment template:
 
 ```powershell
-Copy-Item backend\.env.example backend\.env
+Copy-Item .env.example .env
 ```
 
-Set `DATABASE_URL` in `backend/.env`:
-
-```env
-DATABASE_URL=postgresql://pulsewatch_user:securepassword@localhost:5432/pulsewatch
-```
-
-## Run Postgres With Docker
-
-Start the database container:
+2. Install Python dependencies:
 
 ```powershell
-docker compose up -d
+venv\Scripts\python -m pip install -r requirements-dev.txt
 ```
 
-This starts PostgreSQL 16 with:
-
-- Database: `pulsewatch`
-- User: `pulsewatch_user`
-- Port: `5432`
-
-## Run The API Locally
-
-From the project root:
+3. Install frontend dependencies:
 
 ```powershell
-cd backend
-..\venv\Scripts\python -m uvicorn main:app --reload
+cd frontend
+npm install
+cd ..
 ```
 
-The API will be available at:
-
-- App: `http://127.0.0.1:8000`
-- Swagger UI: `http://127.0.0.1:8000/docs`
-- ReDoc: `http://127.0.0.1:8000/redoc`
-
-## Current Data Model
-
-The application defines three core tables:
-
-- `endpoints`
-- `metrics`
-- `alerts`
-
-Tables are created automatically on startup through SQLAlchemy metadata.
-
-## Git Notes
-
-Sensitive and local-only files are excluded from git, including:
-
-- `venv/`
-- `backend/.env`
-- `__pycache__/`
-
-## GitHub
-
-The local repository is initialized and connected to:
-
-`https://github.com/malakfaour/pulsewatch.git`
-
-If the repository exists and your account has access, push with:
+4. Start the stack:
 
 ```powershell
-git push -u origin main
+docker compose up -d db
+venv\Scripts\python -m uvicorn app.api.main:app --reload
 ```
+
+5. In another terminal, start the frontend:
+
+```powershell
+cd frontend
+npm run dev
+```
+
+## Useful Scripts
+
+- `python scripts/create_superuser.py --email admin@example.com`
+- `python scripts/seed_db.py`
+- `python scripts/run_worker.py`
+
+## API Highlights
+
+- `POST /auth/register`
+- `POST /auth/login`
+- `GET /dashboard`
+- `GET /health`
+- `GET /exports/*.csv`
+- `CRUD /endpoints`
+- `Read /metrics`
+- `CRUD /alerts`
+
+## Testing
+
+Run the backend test suite:
+
+```powershell
+pytest
+```
+
+Build the frontend:
+
+```powershell
+cd frontend
+npm run build
+```
+
+## Deployment Notes
+
+- `docker-compose.yml` runs the local app stack
+- `infra/docker-compose.yml` and `infra/docker/` contain deployment-oriented containers
+- `infra/aws/` contains starter IAM, S3, EC2, and security group definitions
+- `.github/workflows/ci.yml` runs backend tests and frontend build checks

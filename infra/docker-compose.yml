@@ -1,9 +1,8 @@
 services:
   db:
     image: postgres:16
-    container_name: pulsewatch_db
     env_file:
-      - .env
+      - ../.env
     ports:
       - "5432:5432"
     volumes:
@@ -11,10 +10,10 @@ services:
 
   api:
     build:
-      context: .
+      context: ..
       dockerfile: infra/docker/Dockerfile.api
     env_file:
-      - .env
+      - ../.env
     depends_on:
       - db
     ports:
@@ -22,10 +21,10 @@ services:
 
   worker:
     build:
-      context: .
+      context: ..
       dockerfile: infra/docker/Dockerfile.worker
     env_file:
-      - .env
+      - ../.env
     depends_on:
       - db
 
