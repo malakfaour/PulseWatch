@@ -43,11 +43,12 @@ export function EndpointFormModal({ isOpen, onClose, endpoint }: Props) {
   const createMutation = useCreateEndpoint();
   const updateMutation = useUpdateEndpoint(endpoint?.id ?? '');
   const isEditing = !!endpoint;
+  const endpointMethod: FormData['method'] = endpoint?.method === 'POST' ? 'POST' : 'GET';
 
   const defaultValues: DefaultValues<FormData> = endpoint ? {
     name: endpoint.name,
     url: endpoint.url,
-    method: endpoint.method === 'POST' ? 'POST' : 'GET',
+    method: endpointMethod,
     intervalSeconds: endpoint.intervalSeconds,
     timeoutMs: endpoint.timeoutMs,
     expectedStatusCode: endpoint.expectedStatusCode,
@@ -83,7 +84,7 @@ export function EndpointFormModal({ isOpen, onClose, endpoint }: Props) {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={isEditing ? 'Edit Endpoint' : 'Add New Endpoint'}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit as SubmitHandler<FormData>)} className="space-y-4">
         <Input label="Name" placeholder="Payment API" error={errors.name?.message} {...register('name')} />
         <Input label="URL" placeholder="https://api.example.com/health" error={errors.url?.message} {...register('url')} />
 
