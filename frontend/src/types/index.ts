@@ -23,6 +23,7 @@ export interface RegisterPayload {
 
 export type EndpointStatus = 'UP' | 'DOWN' | 'DEGRADED' | 'PENDING';
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD';
+export type EndpointFormMethod = 'GET' | 'POST';
 
 export interface Endpoint {
   id: string;
@@ -44,7 +45,7 @@ export interface Endpoint {
 export interface EndpointFormPayload {
   name: string;
   url: string;
-  method: HttpMethod;
+  method: EndpointFormMethod;
   intervalSeconds: number;
   timeoutMs: number;
   expectedStatusCode: number;
