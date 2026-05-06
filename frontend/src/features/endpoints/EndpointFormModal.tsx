@@ -1,5 +1,6 @@
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import type { DefaultValues, SubmitHandler } from 'react-hook-form';
+import type { SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Modal, Input, Select, Button, useToast } from '@/components/ui';
@@ -43,28 +44,43 @@ export function EndpointFormModal({ isOpen, onClose, endpoint }: Props) {
   const createMutation = useCreateEndpoint();
   const updateMutation = useUpdateEndpoint(endpoint?.id ?? '');
   const isEditing = !!endpoint;
-  const endpointMethod: FormData['method'] = endpoint?.method === 'POST' ? 'POST' : 'GET';
-
-  const defaultValues: DefaultValues<FormData> = endpoint ? {
-    name: endpoint.name,
-    url: endpoint.url,
-    method: endpointMethod,
-    intervalSeconds: endpoint.intervalSeconds,
-    timeoutMs: endpoint.timeoutMs,
-    expectedStatusCode: endpoint.expectedStatusCode,
-  } : {
-    name: '',
-    url: '',
-    method: 'GET',
-    intervalSeconds: 60,
-    timeoutMs: 5000,
-    expectedStatusCode: 200,
-  };
 
   const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues,
+    defaultValues: {
+      name: '',
+      url: '',
+      method: 'GET',
+      intervalSeconds: 60,
+      timeoutMs: 5000,
+      expectedStatusCode: 200,
+    },
   });
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    if (endpoint) {
+      reset({
+        name: endpoint.name,
+        url: endpoint.url,
+        method: endpoint.method === 'POST' ? 'POST' : 'GET',
+        intervalSeconds: endpoint.intervalSeconds,
+        timeoutMs: endpoint.timeoutMs,
+        expectedStatusCode: endpoint.expectedStatusCode,
+      });
+      return;
+    }
+
+    reset({
+      name: '',
+      url: '',
+      method: 'GET',
+      intervalSeconds: 60,
+      timeoutMs: 5000,
+      expectedStatusCode: 200,
+    });
+  }, [endpoint, isOpen, reset]);
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
@@ -84,7 +100,7 @@ export function EndpointFormModal({ isOpen, onClose, endpoint }: Props) {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={isEditing ? 'Edit Endpoint' : 'Add New Endpoint'}>
-      <form onSubmit={handleSubmit(onSubmit as SubmitHandler<FormData>)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <Input label="Name" placeholder="Payment API" error={errors.name?.message} {...register('name')} />
         <Input label="URL" placeholder="https://api.example.com/health" error={errors.url?.message} {...register('url')} />
 
