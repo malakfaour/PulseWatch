@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+  .dark {
+    color-scheme: dark;
+  }
+  
+  * {
+    @apply border-surface-200;
+  }
+
+  body {
+    @apply bg-surface-50 text-surface-900 antialiased;
+    font-family: 'DM Sans', system-ui, sans-serif;
+  }
+
+  .dark body {
+    @apply bg-surface-950 text-surface-100;
+  }
+
+  /* Smooth scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { @apply bg-transparent; }
+  ::-webkit-scrollbar-thumb { @apply rounded-full bg-surface-300 dark:bg-surface-600; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-surface-400 dark:bg-surface-500; }
+
+  /* Selection */
+  ::selection { @apply bg-pulse-100 text-pulse-900; }
+  .dark ::selection { @apply bg-pulse-900/40 text-pulse-200; }
+}
+
+@layer utilities {
+  .font-500 { font-weight: 500; }
+  .font-600 { font-weight: 600; }
+  .font-700 { font-weight: 700; }
+  .font-800 { font-weight: 800; }
+
+  .h-4\.5 { height: 1.125rem; }
+  .w-4\.5 { width: 1.125rem; }
+}

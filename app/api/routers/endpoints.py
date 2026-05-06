@@ -3,8 +3,14 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.orm import Session
 
-from app.api.schemas.endpoint import EndpointCreate, EndpointResponse, EndpointUpdate
+from app.api.schemas.endpoint import (
+    EndpointCreate,
+    EndpointPageResponse,
+    EndpointResponse,
+    EndpointUpdate,
+)
 from app.core.database import get_db
+from app.models.endpoint import Endpoint
 from app.services.endpoint_service import (
     EndpointNotFoundError,
     create_endpoint as create_endpoint_service,
@@ -25,13 +31,23 @@ def create_endpoint(
     return create_endpoint_service(db, endpoint_in)
 
 
-@router.get("", response_model=list[EndpointResponse])
+@router.get("", response_model=EndpointPageResponse)
 def list_endpoints(
-    skip: int = Query(default=0, ge=0),
-    limit: int = Query(default=100, ge=1, le=100),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=10, alias="pageSize", ge=1, le=100),
     db: Session = Depends(get_db),
-) -> list[EndpointResponse]:
-    return list_endpoints_service(db, skip=skip, limit=limit)
+) -> EndpointPageResponse:
+    skip = (page - 1) * page_size
+    items = list_endpoints_service(db, skip=skip, limit=page_size)
+    total = db.query(Endpoint).count()
+    total_pages = (total + page_size - 1) // page_size if total else 0
+    return EndpointPageResponse(
+        items=items,
+        total=total,
+        page=page,
+        page_size=page_size,
+        total_pages=total_pages,
+    )
 
 
 @router.get("/{endpoint_id}", response_model=EndpointResponse)

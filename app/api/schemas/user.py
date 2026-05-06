@@ -1,25 +1,27 @@
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import Field
+
+from app.api.schemas import CamelModel
 
 
-class UserRegister(BaseModel):
+class UserRegister(CamelModel):
     email: str = Field(pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
     password: str
 
 
-class UserLogin(BaseModel):
+class UserLogin(CamelModel):
     email: str = Field(pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
     password: str
 
 
-class UserResponse(BaseModel):
+class UserResponse(CamelModel):
     id: UUID
     email: str
 
     model_config = {"from_attributes": True}
 
 
-class TokenResponse(BaseModel):
+class TokenResponse(CamelModel):
     access_token: str
     token_type: str = "bearer"

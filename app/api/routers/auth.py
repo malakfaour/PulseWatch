@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
+from app.api.dependencies import get_current_user
 from app.api.schemas.user import TokenResponse, UserLogin, UserRegister, UserResponse
 from app.core.database import get_db
 from app.core.exceptions import raise_database_error
@@ -45,3 +46,8 @@ def login(user_in: UserLogin, db: Session = Depends(get_db)) -> TokenResponse:
 
     token = create_access_token(str(user.id))
     return TokenResponse(access_token=token)
+
+
+@router.get("/me", response_model=UserResponse)
+def me(current_user: User = Depends(get_current_user)) -> UserResponse:
+    return current_user

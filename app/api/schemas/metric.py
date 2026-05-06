@@ -1,10 +1,12 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import ConfigDict
+
+from app.api.schemas import CamelModel
 
 
-class MetricResponse(BaseModel):
+class MetricResponse(CamelModel):
     id: UUID
     endpoint_id: UUID
     response_time_ms: float | None

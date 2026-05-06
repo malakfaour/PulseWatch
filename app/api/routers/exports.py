@@ -13,7 +13,7 @@ from app.models.metric import Metric
 from app.services.s3_service import upload_file_to_s3
 from app.worker.exporter import build_csv_bytes, save_export_file
 
-router = APIRouter(prefix="/exports", tags=["exports"])
+router = APIRouter(prefix="/reports", tags=["exports"])
 
 
 def _export_response(filename: str, csv_bytes: bytes) -> Response:

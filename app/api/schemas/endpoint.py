@@ -2,10 +2,12 @@ from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
-from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field
+from pydantic import AnyHttpUrl, ConfigDict, Field
+
+from app.api.schemas import CamelModel
 
 
-class EndpointCreate(BaseModel):
+class EndpointCreate(CamelModel):
     name: str
     url: AnyHttpUrl
     method: Literal["GET", "POST"]
@@ -13,7 +15,7 @@ class EndpointCreate(BaseModel):
     is_active: bool = True
 
 
-class EndpointUpdate(BaseModel):
+class EndpointUpdate(CamelModel):
     name: str
     url: AnyHttpUrl
     method: Literal["GET", "POST"]
@@ -21,7 +23,7 @@ class EndpointUpdate(BaseModel):
     is_active: bool
 
 
-class EndpointResponse(BaseModel):
+class EndpointResponse(CamelModel):
     id: UUID
     name: str
     url: str
@@ -32,3 +34,11 @@ class EndpointResponse(BaseModel):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class EndpointPageResponse(CamelModel):
+    items: list[EndpointResponse]
+    total: int
+    page: int
+    page_size: int
+    total_pages: int

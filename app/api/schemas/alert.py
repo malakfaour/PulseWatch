@@ -2,13 +2,15 @@ from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import ConfigDict, Field
+
+from app.api.schemas import CamelModel
 
 AlertTypeValue = Literal["RESPONSE_TIME", "STATUS_CODE", "DOWNTIME"]
 AlertComparisonValue = Literal[">", "<", "=="]
 
 
-class AlertCreate(BaseModel):
+class AlertCreate(CamelModel):
     endpoint_id: UUID
     type: AlertTypeValue
     comparison: AlertComparisonValue
@@ -17,7 +19,7 @@ class AlertCreate(BaseModel):
     is_active: bool = True
 
 
-class AlertUpdate(BaseModel):
+class AlertUpdate(CamelModel):
     type: AlertTypeValue | None = None
     comparison: AlertComparisonValue | None = None
     threshold: int | None = Field(default=None, ge=0)
@@ -25,7 +27,7 @@ class AlertUpdate(BaseModel):
     is_active: bool | None = None
 
 
-class AlertResponse(BaseModel):
+class AlertResponse(CamelModel):
     id: UUID
     endpoint_id: UUID
     type: AlertTypeValue

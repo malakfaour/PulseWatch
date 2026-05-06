@@ -1,7 +1,7 @@
-from pydantic import BaseModel
+from app.api.schemas import CamelModel
 
 
-class DashboardSummaryResponse(BaseModel):
+class DashboardSummaryResponse(CamelModel):
     total_endpoints: int
     healthy_endpoints: int
     unhealthy_endpoints: int

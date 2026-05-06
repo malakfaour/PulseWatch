@@ -24,6 +24,9 @@ class AuthHeaderMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
 
     async def dispatch(self, request: Request, call_next):
+        if request.method == "OPTIONS":
+            return await call_next(request)
+
         if is_public_path(request.url.path):
             return await call_next(request)
 
