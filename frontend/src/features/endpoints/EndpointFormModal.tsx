@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import type { SubmitHandler } from 'react-hook-form';
+import type { Resolver, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Modal, Input, Select, Button, useToast } from '@/components/ui';
@@ -46,7 +46,7 @@ export function EndpointFormModal({ isOpen, onClose, endpoint }: Props) {
   const isEditing = !!endpoint;
 
   const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<FormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema) as Resolver<FormData>,
     defaultValues: {
       name: '',
       url: '',
