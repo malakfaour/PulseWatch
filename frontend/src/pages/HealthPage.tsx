@@ -1,3 +1,4 @@
+import React from 'react';
 import { Database, HeartPulse, ShieldCheck, TimerReset } from 'lucide-react';
 import { TopBar } from '@/components/layout/AppLayout';
 import { Button, Card, CardHeader, CardTitle, Skeleton } from '@/components/ui';
@@ -71,11 +72,11 @@ export default function HealthPage() {
           <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
             <div className="rounded-xl border border-surface-100 p-4 dark:border-surface-800">
               <p className="text-sm font-600 text-surface-800 dark:text-surface-100">Health Probe</p>
-              <p className="mt-1 text-xs text-surface-400">`GET /health` should return `status: ok` and `database: ok`.</p>
+              <p className="mt-1 text-xs text-surface-400">GET /health should return status: ok and database: ok.</p>
             </div>
             <div className="rounded-xl border border-surface-100 p-4 dark:border-surface-800">
               <p className="text-sm font-600 text-surface-800 dark:text-surface-100">Readiness Probe</p>
-              <p className="mt-1 text-xs text-surface-400">`GET /health/ready` should return `ready: true` when the API and DB are ready for traffic.</p>
+              <p className="mt-1 text-xs text-surface-400">GET /health/ready should return ready: true when the API and DB are ready for traffic.</p>
             </div>
           </div>
         </Card>
