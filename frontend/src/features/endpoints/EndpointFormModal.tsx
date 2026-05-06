@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form';
+import type { DefaultValues, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Modal, Input, Select, Button, useToast } from '@/components/ui';
@@ -43,7 +44,7 @@ export function EndpointFormModal({ isOpen, onClose, endpoint }: Props) {
   const updateMutation = useUpdateEndpoint(endpoint?.id ?? '');
   const isEditing = !!endpoint;
 
-  const defaultValues: FormData = endpoint ? {
+  const defaultValues: DefaultValues<FormData> = endpoint ? {
     name: endpoint.name,
     url: endpoint.url,
     method: endpoint.method === 'POST' ? 'POST' : 'GET',
@@ -64,7 +65,7 @@ export function EndpointFormModal({ isOpen, onClose, endpoint }: Props) {
     defaultValues,
   });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
       if (isEditing) {
         await updateMutation.mutateAsync(data);
