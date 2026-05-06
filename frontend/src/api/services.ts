@@ -448,7 +448,7 @@ export const endpointsApi = {
     const { data } = await apiClient.put<BackendEndpoint>(`/endpoints/${id}`, toBackendEndpointPayload({
       name: payload.name ?? existing.name,
       url: payload.url ?? existing.url,
-      method: payload.method ?? existing.method,
+      method: payload.method ?? (existing.method === 'POST' ? 'POST' : 'GET'),
       intervalSeconds: payload.intervalSeconds ?? existing.intervalSeconds,
       timeoutMs: payload.timeoutMs ?? existing.timeoutMs,
       expectedStatusCode: payload.expectedStatusCode ?? existing.expectedStatusCode,
