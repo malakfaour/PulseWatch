@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { Modal, Input, Select, Button, useToast } from '@/components/ui';
 import { useCreateEndpoint, useUpdateEndpoint } from '@/hooks';
 import { extractErrorMessage } from '@/api/client';
-import type { Endpoint, HttpMethod } from '@/types';
+import type { Endpoint } from '@/types';
 
 const schema = z.object({
   name:                z.string().min(1, 'Name is required'),
@@ -16,7 +16,7 @@ const schema = z.object({
 });
 type FormData = z.infer<typeof schema>;
 
-const METHOD_OPTIONS: { value: HttpMethod; label: string }[] = [
+const METHOD_OPTIONS: { value: FormData['method']; label: string }[] = [
   { value: 'GET',    label: 'GET' },
   { value: 'POST',   label: 'POST' },
 ];
@@ -43,13 +43,25 @@ export function EndpointFormModal({ isOpen, onClose, endpoint }: Props) {
   const updateMutation = useUpdateEndpoint(endpoint?.id ?? '');
   const isEditing = !!endpoint;
 
+  const defaultValues: FormData = endpoint ? {
+    name: endpoint.name,
+    url: endpoint.url,
+    method: endpoint.method === 'POST' ? 'POST' : 'GET',
+    intervalSeconds: endpoint.intervalSeconds,
+    timeoutMs: endpoint.timeoutMs,
+    expectedStatusCode: endpoint.expectedStatusCode,
+  } : {
+    name: '',
+    url: '',
+    method: 'GET',
+    intervalSeconds: 60,
+    timeoutMs: 5000,
+    expectedStatusCode: 200,
+  };
+
   const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: endpoint ? {
-      name: endpoint.name, url: endpoint.url, method: endpoint.method,
-      intervalSeconds: endpoint.intervalSeconds, timeoutMs: endpoint.timeoutMs,
-      expectedStatusCode: endpoint.expectedStatusCode,
-    } : { method: 'GET', intervalSeconds: 60, timeoutMs: 5000, expectedStatusCode: 200 },
+    defaultValues,
   });
 
   const onSubmit = async (data: FormData) => {
