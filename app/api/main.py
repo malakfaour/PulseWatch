@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+import os
 
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -28,6 +29,20 @@ Base.metadata.create_all(bind=engine)
 scheduler = WorkerScheduler()
 
 
+def _cors_origins() -> list[str]:
+    default_origins = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "https://pulse-watch-seven.vercel.app",
+    ]
+    raw_origins = os.getenv("CORS_ORIGINS", "")
+    if not raw_origins.strip():
+        return default_origins
+
+    parsed = [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
+    return default_origins + [origin for origin in parsed if origin not in default_origins]
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     if settings.enable_scheduler:
@@ -43,10 +58,7 @@ app = FastAPI(title=settings.app_name, lifespan=lifespan)
 register_exception_handlers(app)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=_cors_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
